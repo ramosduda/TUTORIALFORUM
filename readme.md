@@ -98,10 +98,61 @@ const port = app.get('port');
 app.listen(port, () => console.log(`Running at port ${ port }`));
 ```
 #### Testar servidor
-* Executar o comando
+* Executar o comando com o gitBash
 ```
 npm start
 ```
 * Validar o retorno do servidor rodando na porta definida
 
 <img src="./assets/npm_start.png">
+
+
+* Após validar o retorno de teste, digite 'Ctrl + C' para parar o servidor
+
+#### Configurar conexão com banco de dados
+* Criara arquivo 'db.js' na pasta config
+* Colar o código
+```
+const mysql = require('mysql2');
+const dotenv = require('dotenv').config();
+
+const connection = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
+});
+
+connection.connect( (err) => {
+    if (err) {
+        throw err;
+    } else {        
+        console.log("Mysql Connected!");
+    }
+});
+
+module.exports = connection;
+```
+
+#### Testar servidor e conexão com banco de dados
+* Executar o comando com o gitBash
+```
+npm start
+```
+* Validar o retorno do servidor rodando na porta definida e o MySql conectado
+
+<img src="./assets/npm_start.png">
+
+#### Criar rota para cadastrar usuário
+* Criar arquivo 'usersRouter.js' na pasta routes
+* Colar o código
+```
+const { Router } = require('express');
+const router = Router();
+const { listUsers, storeUser } = require('../controllers/usersController')
+
+router.get('/users', listUsers);
+router.post('/user/create', storeUser);
+
+module.exports = router;
+```
