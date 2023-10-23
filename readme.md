@@ -2,15 +2,18 @@
 
 #### Criando o banco de dados
 * Abrir programa Workbench
-* Criar database com o comando
+* Copie os comandos a seguir e execute no Workbench
+* Pressione as teclas 'Ctrl + Enter' para executatar os comandos
+<hr>
+
+* Criar database
 ```
 create database app_forum_db;
 ```
-* Definir a database 
+* Definir a database
 ```
 use app_forum_db;
 ```
-
 * Criar tabela users
 ```
 create table users (
@@ -26,9 +29,9 @@ create table users (
 * Criar tabela posts
 ```
 create table posts (
-	id int not null auto_increment,
+    id int not null auto_increment,
     descricao varchar(255) not null,
-    user_id int not null
+    user_id int not null,
     created_at datetime default current_timestamp,
     primary key(id)
 );
@@ -36,7 +39,7 @@ create table posts (
 * Criar tabela comments
 ```
 create table comments(
-	id int not null auto_increment,
+    id int not null auto_increment,
     descricao varchar(120) not null,
     post_id int not null,
     user_id int not null,
@@ -94,3 +97,11 @@ const port = app.get('port');
 
 app.listen(port, () => console.log(`Running at port ${ port }`));
 ```
+#### Testar servidor
+* Executar o comando
+```
+npm start
+```
+* Validar o retorno do servidor rodando na porta definida
+
+<img src="./assets/npm_start.png">
