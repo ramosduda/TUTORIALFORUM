@@ -97,7 +97,7 @@ const port = app.get('port');
 
 app.listen(port, () => console.log(`Running at port ${ port }`));
 ```
-#### Testar servidor
+### Testar servidor
 * Executar o comando com o gitBash
 ```
 npm start
@@ -109,8 +109,9 @@ npm start
 
 * Após validar o retorno de teste, digite 'Ctrl + C' para parar o servidor
 
-#### Configurar conexão com banco de dados
-* Criara arquivo 'db.js' na pasta config
+### Configurar conexão com banco de dados
+* Criar pasta 'config' dentro da pasta 'src'
+* Criara arquivo 'db.js' na pasta 'config'
 * Colar o código
 ```
 const mysql = require('mysql2');
@@ -134,16 +135,75 @@ connection.connect( (err) => {
 module.exports = connection;
 ```
 
-#### Testar servidor e conexão com banco de dados
-* Executar o comando com o gitBash
+### Criar controller para cadastrar usuário
+* Criar pasta 'controllers' dentro da pasta 'src'
+* Criara arquivo 'usersController.js' na pasta 'controllers'
+* Colar o código
 ```
-npm start
+const connection = require('../config/db');
+const bcrypt = require('bcrypt');
+
+async function listUsers(request, response) {
+    connection.query('SELECT * FROM users', (err, results) => {
+        if (results) {
+            response
+                .status(200)
+                .json({
+                    success: true,
+                    message: `Sucesso! Lista de usuários.`,
+                    data: results
+                });
+        } else {
+            response
+                .status(400)
+                .json({
+                    success: false,
+                    message: `Não foi possível realizar a remoção. Verifique os dados informados`,
+                    query: err.sql,
+                    sqlMessage: err.sqlMessage
+                });
+        }
+    })
+}
+
+async function storeUser(request, response) {   
+    const params = Array(
+        request.body.name,
+        request.body.email,
+        bcrypt.hashSync(request.body.password, 10)
+    );
+
+    const query = 'INSERT INTO users(name,email,password) values(?,?,?);';
+
+    connection.query(query, params, (err, results) => {
+        if (results) {
+            response
+                .status(201)
+                .json({
+                    success: true,
+                    message: `Sucesso! Usuário cadastrado.`,
+                    data: results
+                });
+        } else {
+            response
+                .status(400)
+                .json({
+                    success: false,
+                    message: `Não foi possível realizar a ação. Verifique os dados informados`,
+                    query: err.sql,
+                    sqlMessage: err.sqlMessage
+                });
+        }        
+    })
+}
+
+module.exports = {
+    listUsers,
+    storeUser
+}
 ```
-* Validar o retorno do servidor rodando na porta definida e o MySql conectado
 
-<img src="./assets/npm_start.png">
-
-#### Criar rota para cadastrar usuário
+### Criar rota para cadastrar usuário
 * Criar arquivo 'usersRouter.js' na pasta routes
 * Colar o código
 ```
@@ -156,3 +216,20 @@ router.post('/user/create', storeUser);
 
 module.exports = router;
 ```
+
+### Configurar API para disponibilizar a rota criada
+* Abrir o arquivo 'app.js' 
+* Adicionar a importação do 'usersRouter.js' na linha 5
+```
+const userRouter = require('./routes/usersRouter');
+```
+* Habilitar a utilização, adicionando o código na linha 10
+
+### Testar servidor e conexão com banco de dados
+* Executar o comando com o gitBash
+```
+npm start
+```
+* Validar o retorno do servidor rodando na porta definida e o MySql conectado
+
+<img src="./assets/npm_start_mysql.png">
